@@ -41,6 +41,7 @@ function App() {
 
   }
 
+
   const handleUpdateTrack = async (formData, trackId) => {
     try {
       const updatedTrack = await trackService.update(formData, trackId)
@@ -50,7 +51,7 @@ function App() {
         throw new Error(newTrack.err)
       }
 
-      const newTrackList = tracks.map((track) => (updatedTrack._id !== trackId ? track : updatedTrack))
+      const newTrackList = tracks.map((track) => (track._id !== updatedTrack._id ? track : updatedTrack))
       setTracks(newTrackList)
       setSelected(updatedTrack)
       setIsFormOpen(false)
@@ -61,6 +62,24 @@ function App() {
     }
   }
 
+  const handleDeletePet = async (trackId) => {
+    try {
+      const deletedTrack = await trackService.deleteTrack(trackId)
+      // console.log(deletedTrack)
+
+      if(deletedTrack.err) {
+        throw new Error(newTrack.err)
+      }
+
+      const updatedTrackList = tracks.filter((track) => track._id !== deletedTrack._id)
+      setTracks(updatedTrackList)
+      setSelected(null)
+      setIsFormOpen(false)
+
+    } catch (err) {
+      console.log(err)
+    }
+  }
   useEffect(() => {
     
     const fetchTracks = async () => {
@@ -89,7 +108,7 @@ function App() {
       <TrackList tracks={tracks} handleSelect={handleSelect} handleFormView={handleFormView} isFormOpen={isFormOpen}/>
 
       {isFormOpen ? (<TrackForm handleAddTrack={handleAddTrack} selected={selected} handleUpdateTrack={handleUpdateTrack}/>) 
-        : (<TrackDetails selected={selected} handleFormView={handleFormView}/>)}
+        : (<TrackDetails selected={selected} handleFormView={handleFormView} handleDeletePet={handleDeletePet}/>)}
       
     </>
   )
